@@ -1,0 +1,47 @@
+import Showdown from "showdown";
+import xss, { getDefaultWhiteList } from "xss";
+
+export const renderMarkdown = (markdown: string) => {
+    const classMap: Record<string, string> = {
+        'h1': 'text-2xl font-semibold mb-3',
+        'h2': 'text-xl font-semibold mb-2',
+        'h3': 'text-lg font-semibold mb-1',
+        'p': 'text-base leading-normal mb-4',
+        'a': 'text-blue-500 underline',
+        'ul': 'list-disc pl-5 mb-4',
+        'ol': 'list-decimal pl-5 mb-4',
+        'li': 'mb-2',
+        'blockquote': 'border-l-4 border-gray-300 pl-4 italic text-gray-600 my-4',
+        'code': 'font-mono text-sm bg-gray-100 p-1 rounded'
+    }
+    const classBindings = Object.keys(classMap)
+        .map(key => ({
+            type: 'output',
+            regex: new RegExp(`<${key}(.*)>`, 'g'),
+            replace: `<${key} class="${classMap[key]}" $1>`
+        }));
+    const converter = new Showdown.Converter({
+        extensions: [
+            ...classBindings,
+            {
+                // Open link in new tab
+                type: 'output',
+                regex: new RegExp('<a(.*)>', 'g'),
+                replace: '<a target="_blank" $1>'
+            }
+        ]
+    })
+
+    let whiteListedTags = getDefaultWhiteList() 
+    for (const classMapKey in classMap) {
+        if(whiteListedTags[classMapKey] === undefined) {
+            whiteListedTags[classMapKey] = ["class"]
+        }
+        whiteListedTags[classMapKey]?.push("class")
+    }
+    const RenderedMarkdown = xss(converter.makeHtml(markdown), {
+        whiteList: whiteListedTags
+    })
+
+    return RenderedMarkdown
+}
