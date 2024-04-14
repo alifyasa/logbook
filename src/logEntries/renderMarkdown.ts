@@ -12,7 +12,7 @@ export const renderMarkdown = (markdown: string) => {
         'ol': 'list-decimal pl-5 mb-4',
         'li': 'mb-2',
         'blockquote': 'border-l-4 border-gray-300 pl-4 italic text-gray-600 my-4',
-        'code': 'font-mono text-sm rounded',
+        'code': 'font-mono',
         'pre': 'font-mono text-sm bg-gray-100 p-2 rounded'
     }
     const classBindings = Object.keys(classMap)
