@@ -10,7 +10,7 @@ LogEntriesRouter.post("/", (c) => c.text("Message Submitted"))
 LogEntriesRouter.post("/render-markdown", async (c) => {
     const formData = await c.req.formData()
     const message = formData.get("message") as string | null
-    if (!message) {
+    if (message === null) {
         c.status(400)
         return c.render(
             <p>Error Getting Message</p>
