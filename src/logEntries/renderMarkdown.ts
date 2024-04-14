@@ -12,12 +12,13 @@ export const renderMarkdown = (markdown: string) => {
         'ol': 'list-decimal pl-5 mb-4',
         'li': 'mb-2',
         'blockquote': 'border-l-4 border-gray-300 pl-4 italic text-gray-600 my-4',
-        'code': 'font-mono text-sm bg-gray-100 p-1 rounded'
+        'code': 'font-mono text-sm rounded',
+        'pre': 'font-mono text-sm bg-gray-100 p-2 rounded'
     }
     const classBindings = Object.keys(classMap)
         .map(key => ({
             type: 'output',
-            regex: new RegExp(`<${key}(.*)>`, 'g'),
+            regex: new RegExp(`<${key}(?:>|(?:\s([a-zA-Z="\s]*)>))`, 'g'),
             replace: `<${key} class="${classMap[key]}" $1>`
         }));
     const converter = new Showdown.Converter({
@@ -39,7 +40,8 @@ export const renderMarkdown = (markdown: string) => {
         }
         whiteListedTags[classMapKey]?.push("class")
     }
-    const RenderedMarkdown = xss(converter.makeHtml(markdown), {
+    const rawHtml = converter.makeHtml(markdown)
+    const RenderedMarkdown = xss(rawHtml, {
         whiteList: whiteListedTags
     })
 
