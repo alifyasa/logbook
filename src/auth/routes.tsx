@@ -1,15 +1,109 @@
 import { Hono } from 'hono'
 import { AuthDialog } from './dialog'
+import { register } from './register'
+import * as jose from 'jose';
+import { login } from './login'
+import { env } from 'hono/adapter';
+import { setCookie } from 'hono/cookie';
 
 const AuthRouter = new Hono()
 
 AuthRouter.get('/form/:formType', (c) => {
-  const {  formType = "login" } = c.req.param() as never
+  let { formType = "" } = c.req.param() as never
+  formType = formType.toLowerCase()
+
+  if (formType !== "login" && formType !== "register") {
+    return c.text(`Invalid Form: ${formType}`, 404)
+  }
   // Cache for 1 Week
   // c.res.headers.set("Cache-Control", `max-age=${60 * 60 * 24 * 7}`)
   return c.render(
     <AuthDialog formType={formType} />
   )
+})
+
+AuthRouter.post('/register', async (c) => {
+  const formData = await c.req.formData()
+
+  const username = formData.get("username") as string | null
+  const password = formData.get("password") as string | null
+
+  if (!username || !password) {
+    return c.text("Username or Password cannot be empty", 400)
+  }
+
+  const dbBinding = (c.env?.DB) as D1Database
+  const registerSuccess = await register(dbBinding, username, password)
+
+  if (!registerSuccess) {
+    return c.text("Registration Failed", 500)
+  }
+
+  const isAuthenticated = await login(dbBinding, username, password)
+
+  if (!isAuthenticated) {
+    return c.text("Authentication Failed", 401)
+  }
+
+  const { SECRET_KEY } = env<{ SECRET_KEY: string | null | undefined }>(c)
+
+  if (!SECRET_KEY) {
+    return c.text("Unexpected Failure", 500)
+  }
+
+  const jwtToken = await new jose.SignJWT({ username })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('2h')
+    .sign(new TextEncoder().encode(SECRET_KEY))
+  
+  setCookie(c, "jwt", jwtToken, {
+    secure: true,
+    sameSite: "Strict",
+    httpOnly: true
+  })
+
+  c.res.headers.set("HX-Refresh", "true")
+  return c.text(`Authenticated, Refreshing Page...`, 200)
+})
+
+AuthRouter.post('/login', async (c) => {
+  const formData = await c.req.formData()
+
+  const username = formData.get("username") as string | null
+  const password = formData.get("password") as string | null
+
+  if (!username || !password) {
+    return c.text("Username or Password cannot be empty", 400)
+  }
+
+  const dbBinding = (c.env?.DB) as D1Database
+  const isAuthenticated = await login(dbBinding, username, password)
+
+  if (!isAuthenticated) {
+    return c.text("Authentication Failed", 401)
+  }
+
+  const { SECRET_KEY } = env<{ SECRET_KEY: string | null | undefined }>(c)
+
+  if (!SECRET_KEY) {
+    return c.text("Unexpected Failure", 500)
+  }
+
+  const jwtToken = await new jose.SignJWT({ username })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('2h')
+    .sign(new TextEncoder().encode(SECRET_KEY))
+  
+  setCookie(c, "jwt", jwtToken, {
+    secure: true,
+    sameSite: "Strict",
+    httpOnly: true
+  })
+
+  c.res.headers.set("HX-Refresh", "true")
+  return c.text(`Authenticated, Refreshing Page...`, 200)
 })
 
 export default AuthRouter

@@ -3,6 +3,10 @@ import { Hono } from 'hono'
 import HomeRouter from './home/routes';
 import AuthRouter from './auth/routes';
 
+export type Bindings = {
+  DB: D1Database
+}
+
 const app = new Hono()
 
 app.route('/', HomeRouter)

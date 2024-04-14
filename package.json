@@ -1,18 +1,27 @@
 {
   "scripts": {
-    "dev": "run-p dev:*",
-    "dev:wrangler": "wrangler pages dev dist --live-reload",
-    "dev:watch": "WATCH=true run-p build",
+    "dev": "run-s dev:init dev:run",
+
+    "dev:init": "run-p dev:init:*",
+    "dev:init:db": "wrangler d1 execute logbook-db --local --file=src/schema/db.sql",
+
+    "dev:run": "run-p dev:run:*",
+    "dev:run:wrangler": "wrangler pages dev dist --live-reload",
+    "dev:run:watch": "WATCH=true run-p build",
+
     "build": "run-p build:* -l",
-    "build:tsx": "esbuild --bundle src/index.ts --format=esm --outfile=dist/_worker.js --watch=${WATCH:false}",
-    "build:css": "tailwindcss -i src/styles/index.css -o dist/static/styles.css --watch=${WATCH:false}",
+    "build:tsx": "esbuild --bundle src/index.ts --format=esm --platform=browser --outfile=dist/_worker.js --watch=${WATCH:=false}",
+    "build:css": "tailwindcss -i src/styles/index.css -o dist/static/styles.css --watch=${WATCH:=false}",
     "deploy": "wrangler deploy --minify src/index.ts"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "hono": "^4.2.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240405.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.12.7",
     "npm-run-all": "^4.1.5",
     "tailwindcss": "^3.4.3",
     "wrangler": "^3.47.0"

@@ -10,9 +10,7 @@ export const AuthForm = ({ formType }: Props) => {
             </h2>
             <form
                 id="loginForm"
-                hx-post="/process-login"
-                hx-target="#loginResult"
-                hx-swap="outerHTML"
+                hx-post={`/auth/${formType}`}
                 class="m-0"
             >
                 <div class="mb-2">
@@ -25,7 +23,11 @@ export const AuthForm = ({ formType }: Props) => {
                 </div>
                 <div class="flex flex-row justify-between">
                     <button tabindex={4} class="py-1 px-2 border border-black border-opacity-50 rounded capitalize" type="button" id="auth-close-button">Close</button>
-                    <button tabindex={3} class="py-1 px-2 border border-black border-opacity-50 rounded capitalize" type="submit">{formType}</button>
+                    <button 
+                        tabindex={3} 
+                        class="py-1 px-2 border border-black border-opacity-50 rounded capitalize" 
+                        type="submit"
+                    >{formType}</button>
                 </div>
             </form>
             <div id="loginResult">
