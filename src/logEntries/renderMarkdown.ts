@@ -18,7 +18,7 @@ export const renderMarkdown = (markdown: string) => {
     const classBindings = Object.keys(classMap)
         .map(key => ({
             type: 'output',
-            regex: new RegExp(`<${key}(?:>|(?:\s([a-zA-Z="\s]*)>))`, 'g'),
+            regex: new RegExp(`(?:<${key}>)|(?:<${key} (.*)>)`, 'g'),
             replace: `<${key} class="${classMap[key]}" $1>`
         }));
     const converter = new Showdown.Converter({
