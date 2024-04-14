@@ -13,4 +13,9 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
   },
+  "exclude": [
+    "dist",
+    "public",
+    "tailwind.config.js"
+  ]
 }
