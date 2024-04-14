@@ -5,17 +5,18 @@ interface Props {
 }
 
 export const Home = ({ username }: Props) => {
+    const isAuthenticated = Boolean(username)
     return (
         <BaseLayout
             className="max-w-4xl mx-auto border-2 border-t-0 border-black p-8 font-sans"
         >
-            <div class="flex flex-row">
+            <div class="flex flex-row mb-8">
                 <div class="flex-grow">
                     <h1 class="text-3xl font-semibold leading-none pb-2">LogBook</h1>
                     <h2 class="text-xl">Your Journey, Digitally Documented.</h2>
                 </div>
                 {
-                    username ? (
+                    isAuthenticated ? (
                         <div class="px-4 py-2 border border-black rounded size-fit my-auto mr-4">
                             <h1 class="font-mono">{username}</h1>
                         </div>
@@ -41,6 +42,15 @@ export const Home = ({ username }: Props) => {
                             </button>
                         </>
 
+                    )
+                }
+            </div>
+            <div>
+                {
+                    isAuthenticated ? (
+                        <p>You've Logged In!</p>
+                    ) : (
+                        <p>Welcome to LogBook! Please Login First!</p>
                     )
                 }
             </div>

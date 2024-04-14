@@ -29,26 +29,38 @@ AuthRouter.post('/register', async (c) => {
   const password = formData.get("password") as string | null
 
   if (!username || !password) {
-    return c.text("Username or Password cannot be empty", 400)
+    c.status(400)
+    return c.render(
+      <p remove-me="3s">Username or Password cannot be empty</p>
+    )
   }
 
   const dbBinding = (c.env?.DB) as D1Database
   const registerSuccess = await register(dbBinding, username, password)
 
   if (!registerSuccess) {
-    return c.text("Registration Failed", 500)
+    c.status(500)
+    return c.render(
+      <p remove-me="3s">Registration Failed</p>
+    )
   }
 
   const isAuthenticated = await login(dbBinding, username, password)
 
   if (!isAuthenticated) {
-    return c.text("Authentication Failed", 401)
+    c.status(401)
+    return c.render(
+      <p remove-me="3s">Authentication Failed</p>
+    )
   }
 
   const { SECRET_KEY } = env<{ SECRET_KEY: string | null | undefined }>(c)
 
   if (!SECRET_KEY) {
-    return c.text("Unexpected Failure", 500)
+    c.status(500)
+    return c.render(
+      <p remove-me="3s">Unexpected Failure</p>
+    )
   }
 
   const jwtToken = await new jose.SignJWT({ username })
@@ -74,20 +86,29 @@ AuthRouter.post('/login', async (c) => {
   const password = formData.get("password") as string | null
 
   if (!username || !password) {
-    return c.text("Username or Password cannot be empty", 400)
+    c.status(400)
+    return c.render(
+      <p remove-me="3s">Username or Password cannot be empty</p>
+    )
   }
 
   const dbBinding = (c.env?.DB) as D1Database
   const isAuthenticated = await login(dbBinding, username, password)
 
   if (!isAuthenticated) {
-    return c.text("Authentication Failed", 401)
+    c.status(401)
+    return c.render(
+      <p remove-me="3s">Authentication Failed</p>
+    )
   }
 
   const { SECRET_KEY } = env<{ SECRET_KEY: string | null | undefined }>(c)
 
   if (!SECRET_KEY) {
-    return c.text("Unexpected Failure", 500)
+    c.status(500)
+    return c.render(
+      <p remove-me="3s">Unexpected Failure</p>
+    )
   }
 
   const jwtToken = await new jose.SignJWT({ username })
