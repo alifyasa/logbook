@@ -1,9 +1,8 @@
 import { Hono } from 'hono'
 import { Home } from '.';
 import { getCookie } from 'hono/cookie';
-import { env } from 'hono/adapter';
 
-import * as jose from 'jose';
+import { getSecretKey, jwtVerify } from '../auth/jwt';
 
 const HomeRouter = new Hono()
 
@@ -15,18 +14,12 @@ HomeRouter.get('/', async (c) => {
     )
   }
 
-  const { SECRET_KEY } = env<{ SECRET_KEY: string | null | undefined }>(c)
+  const SECRET_KEY = getSecretKey(c)
   if (!SECRET_KEY) {
     return c.text("Unexpected Failure", 500)
   }
 
-  let verifiedJwt;
-  try {
-    verifiedJwt = await jose.jwtVerify(jwtToken, new TextEncoder().encode(SECRET_KEY))
-  } catch (error) {
-    verifiedJwt = null    
-  }
-
+  const verifiedJwt = await jwtVerify(jwtToken, SECRET_KEY)
   if (!verifiedJwt) {
     return c.render(
       <Home />
@@ -34,7 +27,7 @@ HomeRouter.get('/', async (c) => {
   }
 
   return c.render(
-    <Home username={verifiedJwt.payload.username as string}/>
+    <Home username={verifiedJwt.payload.username as string} />
   )
 })
 
