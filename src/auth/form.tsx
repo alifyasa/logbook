@@ -17,11 +17,11 @@ export const AuthForm = ({ formType }: Props) => {
             >
                 <div class="mb-2">
                     <label for="username" class="block mb-1 text-lg">Username</label>
-                    <input tabindex={1} class="w-full border border-black p-2 rounded" type="text" id="username" name="username" required />
+                    <input tabindex={1} class="w-full border border-black p-2 rounded text-md" type="text" id="username" name="username" required />
                 </div>
                 <div class="mb-8">
                     <label for="password" class="block mb-1 text-lg">Password</label>
-                    <input tabindex={2} class="w-full border border-black p-2 rounded" type="password" id="password" name="password" required />
+                    <input tabindex={2} class="w-full border border-black p-2 rounded text-md" type="password" id="password" name="password" required />
                 </div>
                 <div class="flex flex-row justify-between">
                     <button tabindex={4} class="py-1 px-2 border border-black border-opacity-50 rounded capitalize" type="button" id="auth-close-button">Close</button>
