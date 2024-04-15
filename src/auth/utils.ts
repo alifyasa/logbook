@@ -21,3 +21,22 @@ export function removeJwtAndRedirectToHome(ctx: Context) {
   })
   ctx.header("HX-Redirect", "/")
 }
+
+export function removeJwt(ctx: Context) {
+  setCookie(ctx, "jwt", "", {
+    secure: true,
+    sameSite: "Strict",
+    httpOnly: true,
+    maxAge: 0,
+    expires: new Date(0)
+  })
+}
+
+export function htmxRedirect(ctx: Context, redirectLocation = "/") {
+  ctx.header("HX-Redirect", redirectLocation)
+}
+
+export function browserRedirect(ctx: Context, redirectLocation = "/") {
+    ctx.status(307)
+    ctx.header("Location", redirectLocation)
+}

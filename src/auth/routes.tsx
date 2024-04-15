@@ -4,8 +4,16 @@ import { register } from './register'
 import { login } from './login'
 import { setCookie } from 'hono/cookie';
 import { getSecretKey, jwtSign } from './jwt';
+import { browserRedirect, htmxRedirect, removeJwt } from './utils';
 
 const AuthRouter = new Hono()
+
+AuthRouter.get('/logout', (ctx) => {
+  removeJwt(ctx)
+  htmxRedirect(ctx)
+  browserRedirect(ctx)
+  return ctx.text("Logged Out. Redirecting to Home...")
+})
 
 AuthRouter.get('/form/:formType', (c) => {
   let { formType = "" } = c.req.param() as never

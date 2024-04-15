@@ -3,7 +3,7 @@ import { env } from 'hono/adapter';
 import { getCookie } from 'hono/cookie';
 import { logger } from 'hono/logger';
 import * as jose from 'jose';
-import { isExistUser, removeJwtAndRedirectToHome } from './utils';
+import { browserRedirect, htmxRedirect, isExistUser, removeJwt } from './utils';
 
 export type JWTPayload = jose.JWTPayload
 export type AuthLogger = (str: string, ...rest: string[]) => void
@@ -32,31 +32,36 @@ export const jwtVerify = async (jwtToken: string, secretKey: string) => {
 export const AuthMiddleware: MiddlewareHandler = async (ctx, next) => {
   const jwtToken = getCookie(ctx, "jwt")
   if (!jwtToken) {
-    removeJwtAndRedirectToHome(ctx)
-    return ctx.text("Error: Unauthenticated", 401)
+    browserRedirect(ctx)
+    return ctx.text("Unauthenticated, redirecting to Home...")
   }
 
   const SECRET_KEY = getSecretKey(ctx)
   if (!SECRET_KEY) {
-    return ctx.text("Error: Server Failure", 500)
+    removeJwt(ctx)
+    browserRedirect(ctx)
+    return ctx.text("Server Failure, redirecting to Home...")
   }
 
   const jwtPayload = await jwtVerify(jwtToken, SECRET_KEY)
   if(!jwtPayload) {
-    removeJwtAndRedirectToHome(ctx)
+    removeJwt(ctx)
+    htmxRedirect(ctx)
     return ctx.text("Error: Unauthenticated", 401)
   }
   
   const username = jwtPayload.payload.username as string | null | undefined
   if (!username){
-    removeJwtAndRedirectToHome(ctx)
+    removeJwt(ctx)
+    htmxRedirect(ctx)
     return ctx.text("Error: Server Failure", 500)
   }
 
   const dbBinding = (ctx.env?.DB) as D1Database
   const userExist = await isExistUser(dbBinding, username)
   if(!userExist){
-    removeJwtAndRedirectToHome(ctx)
+    removeJwt(ctx)
+    htmxRedirect(ctx)
     return ctx.text("Error: Unauthenticated", 401)
   }
 
