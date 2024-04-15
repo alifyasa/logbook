@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import HomeRouter from './home/routes';
 import AuthRouter from './auth/routes';
 import LogEntriesRouter from './logEntries/routers';
+import { AuthValidateJWTCookie } from './auth/jwt';
 
 export type Bindings = {
   DB: D1Database
@@ -10,6 +11,7 @@ export type Bindings = {
 
 const app = new Hono()
 
+app.use(AuthValidateJWTCookie)
 app.route('/', HomeRouter)
 app.route('/auth', AuthRouter)
 app.route('/log-entries', LogEntriesRouter)

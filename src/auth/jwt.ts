@@ -4,6 +4,7 @@ import { getCookie } from 'hono/cookie';
 import { logger } from 'hono/logger';
 import * as jose from 'jose';
 import { browserRedirect, htmxRedirect, isExistUser, removeJwt } from './utils';
+import { LogOutHandler } from './logout';
 
 export type JWTPayload = jose.JWTPayload
 export type AuthLogger = (str: string, ...rest: string[]) => void
@@ -83,8 +84,12 @@ export const AuthMiddleware: MiddlewareHandler = async (ctx, next) => {
   await loggerMiddleware(ctx, next)
 }
 
-export const AuthCheckMiddleware: MiddlewareHandler = async (ctx, next) => {
+/**
+ * Make sure only valid cookies or no cookies at all
+ */
+export const AuthValidateJWTCookie: MiddlewareHandler = async (ctx, next) => {
   const jwtToken = getCookie(ctx, "jwt")
+  // No cookie is okay
   if (!jwtToken) {
     ctx.set("isAuthenticated", false)
     return await next()
@@ -97,22 +102,23 @@ export const AuthCheckMiddleware: MiddlewareHandler = async (ctx, next) => {
   }
 
   const jwtPayload = await jwtVerify(jwtToken, SECRET_KEY)
+  // If jwtPayload is wrong, log out
   if(!jwtPayload) {
     ctx.set("isAuthenticated", false)
-    return await next()
+    return await LogOutHandler(ctx, next)
   }
   
   const username = jwtPayload.payload.username as string | null | undefined
   if (!username){
     ctx.set("isAuthenticated", false)
-    return await next()
+    return await LogOutHandler(ctx, next)
   }
 
   const dbBinding = (ctx.env?.DB) as D1Database
   const userExist = await isExistUser(dbBinding, username)
   if(!userExist){
     ctx.set("isAuthenticated", false)
-    return await next()
+    return await LogOutHandler(ctx, next)
   }
 
   ctx.set("username", jwtPayload.payload.username)

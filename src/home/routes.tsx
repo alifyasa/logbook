@@ -2,11 +2,11 @@ import { Hono } from 'hono'
 import { Home } from '.';
 import { getCookie } from 'hono/cookie';
 
-import { AuthCheckMiddleware, getSecretKey, jwtVerify } from '../auth/jwt';
+import { getSecretKey } from '../auth/jwt';
 
 const HomeRouter = new Hono()
 
-HomeRouter.get('/', AuthCheckMiddleware, async (c) => {
+HomeRouter.get('/', async (c) => {
   const jwtToken = getCookie(c, "jwt")
   if (!jwtToken) {
     return c.render(
