@@ -1,6 +1,6 @@
-import { BaseLayout } from "../layouts/BaseLayout"
-import { LogEntry } from "./utils"
-import { BaseHeader } from "../home/header"
+import { BaseLayout } from "../../layouts/BaseLayout"
+import { LogEntry } from "../utils"
+import { BaseHeader } from "../../home/header"
 import { ListEntries } from "./listEntries"
 
 interface Props {
@@ -12,6 +12,7 @@ export const ListEntriesPage = ({ entries, username }: Props) => {
     return (
         <BaseLayout
             className="p-8 font-sans w-screen h-screen flex flex-col"
+            title="LogBook"
         >
             <BaseHeader username={username} />
             <div class="flex-grow overflow-scroll flex flex-col-reverse">

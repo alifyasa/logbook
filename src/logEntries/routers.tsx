@@ -3,8 +3,8 @@ import { renderMarkdown } from "./renderMarkdown";
 import { AuthMiddleware, AuthLogger, JWTPayload } from "../auth/jwt";
 import { insertToDB } from "./insertToDB";
 import { getEntries } from "./getEntries";
-import { ListEntriesPage } from "./listEntriesPage";
-import { ListEntries } from "./listEntries";
+import { ListEntriesPage } from "./components/listEntriesPage";
+import { ListEntries } from "./components/listEntries";
 
 const LogEntriesRouter = new Hono()
 

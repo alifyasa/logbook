@@ -1,6 +1,6 @@
 import { html } from "hono/html";
-import { renderMarkdown } from "./renderMarkdown";
-import { LogEntry, formatTimestamp } from "./utils";
+import { renderMarkdown } from "../renderMarkdown";
+import { LogEntry, formatTimestamp } from "../utils";
 
 interface Props {
     entries: LogEntry[],

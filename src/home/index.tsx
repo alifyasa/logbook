@@ -1,6 +1,6 @@
 import { AuthControl } from "../auth/components/control"
 import { BaseLayout } from "../layouts/BaseLayout"
-import { LogEntriesForm } from "../logEntries/form"
+import { LogEntriesForm } from "../logEntries/components/form"
 import { BaseHeader } from "./header"
 
 interface Props {
@@ -12,6 +12,7 @@ export const Home = ({ username }: Props) => {
     return (
         <BaseLayout
             className="p-8 font-sans w-screen h-screen flex flex-col"
+            title="LogBook"
         >
             <BaseHeader username={username}/>
             <div class="flex-grow">
