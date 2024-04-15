@@ -83,7 +83,8 @@ export const LogEntriesForm = () => {
                                     ':' +
                                     ('00' + Math.abs(offsetMinutes)).slice(-2);
                     
-                    var isoString = now.toISOString().slice(0, -1) + offsetString;
+                    var localTime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+                    var isoString = localTime.toISOString().slice(0, -1) + offsetString;
                     
                     return isoString;
                 } catch (error) {

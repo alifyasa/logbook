@@ -2,12 +2,31 @@ import { Hono } from "hono";
 import { renderMarkdown } from "./renderMarkdown";
 import { AuthMiddleware, AuthLogger, JWTPayload } from "../auth/jwt";
 import { insertToDB } from "./insertToDB";
+import { getEntries } from "./getEntries";
+import { ListEntries } from "./listEntries";
 
 const LogEntriesRouter = new Hono()
 
 LogEntriesRouter.use(AuthMiddleware)
 
+LogEntriesRouter.get("/", async (ctx) => {
+    const jwtPayload = ctx.get("jwtPayload" as never) as JWTPayload | null | undefined
+    if (!jwtPayload) {
+        return ctx.text("Unauthenticated", 401)
+    }
 
+    const username = jwtPayload.username as string | null | undefined 
+    if (!username) {
+        return ctx.text("Error: Server Failure", 500)
+    }
+
+    const dbBinding = (ctx.env?.DB) as D1Database
+    const entries = await getEntries(dbBinding, username, 0)
+
+    return ctx.render(
+        <ListEntries entries={entries} username={username} />
+    )
+})
 LogEntriesRouter.post("/", async (ctx) => {
     const jwtPayload = ctx.get("jwtPayload" as never) as JWTPayload | null | undefined
     if (!jwtPayload) {
@@ -28,6 +47,7 @@ LogEntriesRouter.post("/", async (ctx) => {
 
     const dbBinding = (ctx.env?.DB) as D1Database
     await insertToDB(dbBinding, entryMessage, entryTimestamp, username)
+    await getEntries(dbBinding, username, 0)
 
     return ctx.text("Log Entry Saved")
 })
