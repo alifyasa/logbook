@@ -1,6 +1,11 @@
-import { Context } from 'hono';
+import { Context, MiddlewareHandler } from 'hono';
 import { env } from 'hono/adapter';
+import { getCookie } from 'hono/cookie';
+import { logger } from 'hono/logger';
 import * as jose from 'jose';
+
+export type JWTPayload = jose.JWTPayload
+export type AuthLogger = (str: string, ...rest: string[]) => void
 
 export const getSecretKey = (ctx: Context) => {
   const { SECRET_KEY } = env<{ SECRET_KEY: string | null | undefined }>(ctx)
@@ -21,4 +26,48 @@ export const jwtVerify = async (jwtToken: string, secretKey: string) => {
   } catch (error) {
     return null    
   }
+}
+
+export const AuthMiddleware: MiddlewareHandler = async (ctx, next) => {
+  const jwtToken = getCookie(ctx, "jwt")
+  if (!jwtToken) {
+    return ctx.text("Error: Unauthenticated", 401)
+  }
+
+  const SECRET_KEY = getSecretKey(ctx)
+  if (!SECRET_KEY) {
+    return ctx.text("Error: Server Failure", 500)
+  }
+
+  const jwtPayload = await jwtVerify(jwtToken, SECRET_KEY)
+  if(!jwtPayload) {
+    return ctx.text("Error: Unauthenticated", 401)
+  }
+
+  ctx.set("jwtPayload", jwtPayload.payload)
+  
+  // To differentiate log between requests
+  const logId = __generateRandomString(8)
+  const authLogger: AuthLogger = (str: string, ...rest: string[]) => {
+      const trimmedStr = str.trim()
+      if (trimmedStr.substring(0, 3) === "<--") {
+        console.log(`[${logId}] ${trimmedStr} (User: ${jwtPayload.payload.username})`, ...rest)
+        return
+      }
+
+      console.log(`[${logId}] ${trimmedStr}`, ...rest)
+  }
+  ctx.set("authLogger", authLogger)
+  const loggerMiddleware = logger(authLogger)
+  await loggerMiddleware(ctx, next)
+}
+
+function __generateRandomString(length: number): string {
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        result += charset.charAt(randomIndex);
+    }
+    return result;
 }

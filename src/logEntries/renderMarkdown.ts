@@ -1,5 +1,6 @@
 import Showdown from "showdown";
 import xss, { getDefaultWhiteList } from "xss";
+import { AuthLogger } from "../auth/jwt";
 
 export const renderMarkdown = (markdown: string) => {
     const classMap: Record<string, string> = {
