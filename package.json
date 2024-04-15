@@ -7,12 +7,12 @@
     "dev:run": "run-p dev:run:*",
     "dev:run:wrangler": "wrangler pages dev dist --live-reload",
     "dev:run:watch": "run-p 'build:* -- --watch'",
-
     "build": "run-p build:* -l",
     "build:tsx": "esbuild --bundle src/index.ts --format=esm --platform=browser --outfile=dist/_worker.js",
     "build:css": "tailwindcss -i src/styles/index.css -o dist/static/styles.css",
-
-    "deploy": "wrangler deploy --minify src/index.ts"
+    "deploy": "run-s build deploy:db deploy:site",
+    "deploy:site": "wrangler pages deploy dist",
+    "deploy:db": "wrangler d1 execute logbook-db --remote --file=src/schema/db.sql"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
