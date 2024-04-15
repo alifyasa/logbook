@@ -9,7 +9,5 @@ export async function insertToDB(
         .bind(entryTimestamp, entryMessage, username)
         .run()
 
-    console.log("Saved", dbInsertResponse)
-    
     return dbInsertResponse.success
 }

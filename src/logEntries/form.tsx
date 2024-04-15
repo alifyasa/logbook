@@ -41,18 +41,27 @@ export const LogEntriesForm = () => {
         {html`
         <script>
         function updateTime() {
-            var now = new Date();
-            var year = now.getFullYear();
-            var month = (now.getMonth() + 1).toString().padStart(2, '0');
-            var day = now.getDate().toString().padStart(2, '0');
-            var hours = now.getHours().toString().padStart(2, '0');
-            var minutes = now.getMinutes().toString().padStart(2, '0');
-            var offset = -now.getTimezoneOffset() / 60; // Get timezone offset in hours
-            var offsetString = (offset >= 0 ? '+' : '-') + Math.abs(offset).toString().padStart(2, '0') + ':00'; // Format offset string
-            
-            var timeString = year + '/' + month + '/' + day + ' ' + hours + ':' + minutes + ' (UTC' + offsetString + ')';
-            
-            document.getElementById('time-display').textContent = timeString;
+            try {
+                var now = new Date();
+                var year = now.getFullYear();
+                var month = (now.getMonth() + 1).toString().padStart(2, '0');
+                var day = now.getDate().toString().padStart(2, '0');
+                var hours = now.getHours().toString().padStart(2, '0');
+                var minutes = now.getMinutes().toString().padStart(2, '0');
+                var offset = -now.getTimezoneOffset() / 60; // Get timezone offset in hours
+                var offsetString = (offset >= 0 ? '+' : '-') + Math.abs(offset).toString().padStart(2, '0') + ':00'; // Format offset string
+                
+                var timeString = year + '/' + month + '/' + day + ' ' + hours + ':' + minutes + ' (UTC' + offsetString + ')';
+                
+                var timeDisplayElement = document.getElementById('time-display');
+                if (timeDisplayElement) {
+                    timeDisplayElement.textContent = timeString;
+                } else {
+                    console.error("Element with id 'time-display' not found.");
+                }
+            } catch (error) {
+                console.error('An error occurred while updating time:', error);
+            }
         }
         
         // Update time every second
@@ -60,27 +69,42 @@ export const LogEntriesForm = () => {
         
         // Initial call to display time immediately
         updateTime();
-
+        
         function getCurrentTimestampWithTimezone() {
-            var now = new Date();
-            var offset = -now.getTimezoneOffset();
-            var offsetHours = Math.floor(offset / 60);
-            var offsetMinutes = offset % 60;
-            var offsetString = (offsetHours < 0 ? '-' : '+') +
-                               ('00' + Math.abs(offsetHours)).slice(-2) +
-                               ':' +
-                               ('00' + Math.abs(offsetMinutes)).slice(-2);
-            
-            var isoString = now.toISOString().slice(0, -1) + offsetString;
-            
-            return isoString;
+            try {
+                var now = new Date();
+                var offset = -now.getTimezoneOffset();
+                var offsetHours = Math.floor(offset / 60);
+                var offsetMinutes = offset % 60;
+                var offsetString = (offsetHours < 0 ? '-' : '+') +
+                                   ('00' + Math.abs(offsetHours)).slice(-2) +
+                                   ':' +
+                                   ('00' + Math.abs(offsetMinutes)).slice(-2);
+                
+                var isoString = now.toISOString().slice(0, -1) + offsetString;
+                
+                return isoString;
+            } catch (error) {
+                console.error('An error occurred while getting current timestamp with timezone:', error);
+                return ''; // Return empty string in case of error
+            }
         }
-
+        
         function updateTimeInput(){
-            // Set value of hidden input field
-            document.getElementById('timestamp-input').value = getCurrentTimestampWithTimezone();
+            try {
+                // Set value of hidden input field
+                var timestampInputElement = document.getElementById('timestamp-input');
+                if (timestampInputElement) {
+                    timestampInputElement.value = getCurrentTimestampWithTimezone();
+                } else {
+                    console.error("Element with id 'timestamp-input' not found.");
+                }
+            } catch (error) {
+                console.error('An error occurred while updating timestamp input:', error);
+            }
         }
-        </script>`}
+        </script>
+        `}
         </>
     )
 }

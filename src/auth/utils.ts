@@ -8,7 +8,6 @@ export async function isExistUser(dbBinding: D1Database, username: string) {
         .all()
 
     const dbRecord = dbSelectResponse.results
-    console.log(dbRecord.length !== 0)
     return dbRecord.length !== 0
 }
 
