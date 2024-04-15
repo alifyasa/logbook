@@ -16,19 +16,24 @@ export const ListEntries = ({ entries, username }: Props) => {
             className="p-8 font-sans w-screen h-screen flex flex-col"
         >
             <BaseHeader username={username} />
-            <>
-                {
-                    entries.map(entry => {
-                        const ht = renderMarkdown(entry.entryMessage)
-                        return (
-                            <div class="text-wrap">
-                                <h1 class="text-md">{formatTimestamp(entry.entryTimestamp)}</h1>
-                                {html(ht as unknown as TemplateStringsArray)}
-                            </div>
-                        )
-                    })
-                }
-            </>
+            <div class="flex-grow overflow-scroll">
+                    {
+                        entries.map(entry => {
+                            const ht = renderMarkdown(entry.entryMessage)
+                            return (
+                                <div class="flex flex-col mb-2 border rounded border-black">
+                                    <div class="py-2 px-4 border-b border-black flex">
+                                        <h1 class="text-md font-mono flex-grow">{formatTimestamp(entry.entryTimestamp)}</h1>
+                                        <h1 class="text-md font-mono">[{entry.id}]</h1>
+                                    </div>
+                                    <div class="flex-grow p-4 text-wrap">
+                                        {html(ht as unknown as TemplateStringsArray)}
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
+            </div>
         </BaseLayout>
     )
 
