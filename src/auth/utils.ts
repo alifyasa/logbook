@@ -11,7 +11,7 @@ export async function isExistUser(dbBinding: D1Database, username: string) {
     return dbRecord.length !== 0
 }
 
-export async function removeJwtAndRedirectToHome(ctx: Context) {
+export function removeJwtAndRedirectToHome(ctx: Context) {
   setCookie(ctx, "jwt", "", {
     secure: true,
     sameSite: "Strict",
