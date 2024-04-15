@@ -51,7 +51,6 @@ AuthRouter.post('/register', async (c) => {
     )
   }
 
-
   const SECRET_KEY = getSecretKey(c)
   if (!SECRET_KEY) {
     c.status(500)
