@@ -49,6 +49,7 @@ LogEntriesRouter.post("/", async (ctx) => {
     await insertToDB(dbBinding, entryMessage, entryTimestamp, username)
     await getEntries(dbBinding, username, 0)
 
+    ctx.header("HX-Redirect", "/log-entries")
     return ctx.text("Log Entry Saved")
 })
 
