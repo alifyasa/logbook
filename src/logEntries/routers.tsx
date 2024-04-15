@@ -1,11 +1,37 @@
 import { Hono } from "hono";
 import { renderMarkdown } from "./renderMarkdown";
-import { AuthMiddleware, AuthLogger } from "../auth/jwt";
+import { AuthMiddleware, AuthLogger, JWTPayload } from "../auth/jwt";
+import { insertToDB } from "./insertToDB";
 
 const LogEntriesRouter = new Hono()
 
 LogEntriesRouter.use(AuthMiddleware)
-LogEntriesRouter.post("/", (c) => c.text("Message Submitted"))
+
+
+LogEntriesRouter.post("/", async (ctx) => {
+    const jwtPayload = ctx.get("jwtPayload" as never) as JWTPayload | null | undefined
+    if (!jwtPayload) {
+        return ctx.text("Unauthenticated", 401)
+    }
+
+    const username = jwtPayload.username as string | null | undefined 
+    if (!username) {
+        return ctx.text("Error: Server Failure", 500)
+    }
+
+    const formData = await ctx.req.formData()
+    const entryMessage = formData.get("message") as string | null | undefined
+    const entryTimestamp = formData.get("timestamp") as string | null | undefined
+    if (!entryTimestamp || ! entryMessage) {
+        return ctx.text("Error: Can't Parse Data", 400)
+    }
+
+    const dbBinding = (ctx.env?.DB) as D1Database
+    await insertToDB(dbBinding, entryMessage, entryTimestamp, username)
+
+    return ctx.text("Log Entry Saved")
+})
+
 LogEntriesRouter.post("/render-markdown", async (c) => {
     const authLogger = c.get("authLogger" as never) as AuthLogger
 
