@@ -3,6 +3,7 @@ import { renderMarkdown } from "./renderMarkdown";
 import { AuthMiddleware, AuthLogger, JWTPayload } from "../auth/jwt";
 import { insertToDB } from "./insertToDB";
 import { getEntries } from "./getEntries";
+import { ListEntriesPage } from "./listEntriesPage";
 import { ListEntries } from "./listEntries";
 
 const LogEntriesRouter = new Hono()
@@ -24,7 +25,30 @@ LogEntriesRouter.get("/", async (ctx) => {
     const entries = await getEntries(dbBinding, username, 0)
 
     return ctx.render(
-        <ListEntries entries={entries} username={username} />
+        <ListEntriesPage entries={entries} username={username} />
+    )
+})
+LogEntriesRouter.get("/:offset", async (ctx) => {
+    const jwtPayload = ctx.get("jwtPayload" as never) as JWTPayload | null | undefined
+    if (!jwtPayload) {
+        return ctx.text("Unauthenticated", 401)
+    }
+
+    const username = jwtPayload.username as string | null | undefined 
+    if (!username) {
+        return ctx.text("Error: Server Failure", 500)
+    }
+
+    const offset = Number(ctx.req.param("offset"))
+    if (!offset) {
+        return ctx.text("Offset must be a number", 400)
+    }
+
+    const dbBinding = (ctx.env?.DB) as D1Database
+    const entries = await getEntries(dbBinding, username, Math.round(offset))
+
+    return ctx.render(
+        <ListEntries entries={entries} offset={offset} />
     )
 })
 LogEntriesRouter.post("/", async (ctx) => {

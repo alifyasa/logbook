@@ -10,5 +10,5 @@ export async function getEntries(
         .bind(username, offset)
         .all()
     
-    return dbSelectResponse.results.toReversed() as unknown as LogEntry[]
+    return dbSelectResponse.results as unknown as LogEntry[]
 }

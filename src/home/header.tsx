@@ -10,7 +10,7 @@ export const BaseHeader = ({ username }: Props) => {
             <div class="flex flex-row mb-8">
                 <div class="flex-grow">
                     <h1 class="text-3xl font-semibold leading-none pb-2">
-                        <a href="/">LogBook</a>
+                        <a href="/" class="hover:underline">LogBook</a>
                     </h1>
                     <h2 class="text-xl">
                         <a href="/log-entries" class="text-blue-600 hover:underline">

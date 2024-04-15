@@ -1,5 +1,5 @@
 export interface LogEntry {
-    id: number,
+    id: string,
     entryTimestamp: string,
     entryMessage: string,
     username: string
