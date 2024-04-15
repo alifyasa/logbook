@@ -17,7 +17,7 @@ export const jwtSign = async (object: jose.JWTPayload, secretKey: string) => {
     return await new jose.SignJWT(object)
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
-        .setExpirationTime('2h')
+        .setExpirationTime('4w')
         .sign(new TextEncoder().encode(secretKey))
 }
 
