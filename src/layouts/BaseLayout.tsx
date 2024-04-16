@@ -12,6 +12,7 @@ export const BaseLayout = ({ children, title, className }: Props) => {
             {html`<!DOCTYPE html>`}
             <html>
                 <head>
+                    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg"></link>
                     <link href="/static/styles.css" rel="stylesheet" />
                     <script src="https://unpkg.com/htmx.org@1.9.11"></script>
                     <script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/response-targets.js"></script>
