@@ -2,6 +2,8 @@
 
 A logbook application to record daily activities.
 
+Deployed with no servers using Cloudflare Pages, Hono, and Cloudflare's Serverless Database.
+
 ## Running the Project
 
 ```sh

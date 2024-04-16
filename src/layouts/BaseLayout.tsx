@@ -22,6 +22,7 @@ export const BaseLayout = ({ children, title, className }: Props) => {
                 <body 
                     class={className}
                     hx-ext="response-targets, remove-me"
+                    _="on every htmx:beforeSend in <button:not(.no-disable)/> tell it toggle [disabled='true'] until htmx:afterOnLoad"
                 >{children}</body>
             </html>
         </>

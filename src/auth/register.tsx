@@ -14,7 +14,7 @@ async function register(dbBinding: D1Database, username: string, password: strin
     }
 
     const dbInsertResponse = await dbBinding
-        .prepare("INSERT INTO users (username, passwordHash) VALUES (?, ?);")
+        .prepare("INSERT INTO users (username, password_hash) VALUES (?, ?);")
         .bind(username, passwordHash)
         .run()
     

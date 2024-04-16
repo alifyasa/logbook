@@ -27,11 +27,11 @@ export const ListEntries = ({ entries, offset = 0 }: Props) => {
         <>
             {
                 entries.map(entry => {
-                    const ht = renderMarkdown(entry.entryMessage)
+                    const ht = renderMarkdown(entry.entry_message)
                     return (
                         <div class="flex flex-col mb-2 border rounded border-black">
                             <div class="py-2 px-4 border-b border-black flex">
-                                <h1 class="text-md font-mono flex-grow">{formatTimestamp(entry.entryTimestamp)}</h1>
+                                <h1 class="text-md font-mono flex-grow">{formatTimestamp(entry.entry_timestamp)}</h1>
                             </div>
                             <div class="flex-grow p-4 text-wrap">
                                 {html(ht as unknown as TemplateStringsArray)}

@@ -5,15 +5,15 @@ import { setCookie } from 'hono/cookie';
 
 export async function login(dbBinding: D1Database, username: string, password: string) {
     const dbResponse = await dbBinding
-        .prepare("SELECT username, passwordHash FROM users WHERE username = ?;")
+        .prepare("SELECT username, password_hash FROM users WHERE username = ?;")
         .bind(username)
         .all()
 
     const dbRecord = dbResponse.results.find(record => record.username === username)
 
     if (dbRecord) {
-        const { passwordHash } = dbRecord
-        const compareResult = await bcrypt.compare(password, passwordHash as string)
+        const { password_hash } = dbRecord
+        const compareResult = await bcrypt.compare(password, password_hash as string)
         return compareResult
     }
 
